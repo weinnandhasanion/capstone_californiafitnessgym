@@ -105,6 +105,9 @@ if($annualHasValue) {
   </style>
 </head>
 <body>
+  <div class="full-page-loader" id="loader">
+    <div class="loader"></div>
+  </div>
   <!-- Logout confirmation modal -->
   <div class="modal" id="logout-modal">
     <div class="modal-sm">
@@ -316,6 +319,7 @@ if($annualHasValue) {
   <script src="./../js/sidebar.js"></script>
   <script src="https://www.paypal.com/sdk/js?client-id=sb&currency=USD" data-sdk-integration-source="button-factory"></script>
   <script>
+    $("#loader").css("display", "flex");
     function initPayPalButton() {
       paypal.Buttons({
         style: {
@@ -346,6 +350,7 @@ if($annualHasValue) {
     initPayPalButton();
 
     window.onload = () => {
+      $("#loader").css("display", "none");
       $("#confirm-logout").on("click", function() {
         $.ajax({
           url: "./../functions/logout_process.php",
@@ -356,8 +361,6 @@ if($annualHasValue) {
           }
         });
       });
-
-      
 
       let m = $("#monthlypay").text();
       let a = $("#annualpay").text();

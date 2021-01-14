@@ -20,9 +20,10 @@ if(mysqli_num_rows($res)) {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Promo Page</title>
+  <title>Payment History Page</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./../css/default.css">
+
   <link rel="icon" href="./../img/gym_logo.png">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
@@ -97,6 +98,9 @@ if(mysqli_num_rows($res)) {
   </style>
 </head>
 <body>
+  <div class="full-page-loader" id="loader">
+    <div class="loader"></div>
+  </div>
   <!-- Logout confirmation modal -->
   <div class="modal" id="logout-modal">
     <div class="modal-sm">
@@ -214,9 +218,10 @@ if(mysqli_num_rows($res)) {
 
   <script src="./../js/sidebar.js"></script>
   <script>
-    window.onload = () => {
-
-    }
+    $("#loader").css("display", "flex");
+    $(document).ready(function() {
+      $("#loader").css("display", "none");
+    })
   </script>
 </body>
 </html>

@@ -21,6 +21,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./../css/profile.css">
   <link rel="stylesheet" href="./../css/sidebar.css">
+  <link rel="stylesheet" href="./../css/loader.css">
   <link rel="icon" href="./../img/gym_logo.png">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
@@ -56,6 +57,9 @@
   </style>
 </head>
 <body>
+  <div class="full-page-loader" id="loader">
+    <div class="loader"></div>
+  </div>
   <!-- Logout confirmation modal -->
   <div class="modal" id="logout-modal">
     <div class="modal-sm">
@@ -275,7 +279,9 @@
   <script src="./../js/sidebar.js"></script>
   <script src="./../js/qr-code/qrcode.min.js"></script>
   <script>
+    $("#loader").css("display", "flex");
     window.onload = () => {
+      $("#loader").css("display", "none");
       $("#confirm-logout").on("click", function() {
         $.ajax({
           url: "./../functions/logout_process.php",

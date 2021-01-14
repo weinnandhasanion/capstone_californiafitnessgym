@@ -1,3 +1,65 @@
+<?php 
+require "./../functions/connect.php";
+session_start();
+
+if(!isset($_SESSION["user"]) && !isset($_SESSION["pass"])) {
+  header("Location: ./../index.php");
+}
+
+$monthlyHasValue = false;
+$annualHasValue = false;
+$subscribed = false;
+$paidMonthly = false;
+$paidAnnual = false;
+
+$sql = "SELECT * FROM paymentlog WHERE member_id = '".$_SESSION["member_id"]."' AND payment_description = 'Monthly Subscription' ORDER BY date_payment DESC";
+$res = mysqli_query($con, $sql);
+if(mysqli_num_rows($res) > 0) {
+  $monthlyHasValue = true;
+  $monthlyData = array();
+  while($row = mysqli_fetch_array($res)) {
+    $monthlyData[] = $row;
+  }
+
+  $monthly = $monthlyData[0];
+  $x = new DateTime($monthly["date_payment"]);
+  
+  $monthlyStart = $x->format('Y-m-d');
+  $monthlyEnd = date("Y-m-d", strtotime($monthlyStart. " + 30 days"));
+} else {
+  $monthlyHasValue = false;
+}
+
+$sql2 = "SELECT * FROM paymentlog WHERE member_id = '".$_SESSION["member_id"]."' AND payment_description = 'Annual Subscription' ORDER BY date_payment DESC";
+$res2 = mysqli_query($con, $sql2);
+if(mysqli_num_rows($res2) > 0) {
+  $annualHasValue = true;
+  $annualData = array();
+  while($row = mysqli_fetch_array($res2)) {
+    $annualData[] = $row;
+  }
+
+  $annual = $annualData[0];
+  $y = new DateTime($annual["date_payment"]);
+
+  $annualStart = $y->format('Y-m-d');
+  $annualEnd = date("Y-m-d", strtotime($annualStart. " + 365 days"));
+} else {
+  $annualHasValue = false;
+}
+
+if($monthlyHasValue) {
+  $now = date("Y-m-d");
+  ($now > $monthlyEnd) ? $paidMonthly = false : $paidMonthly = true;
+}
+
+if($annualHasValue) {
+  $now = date("Y-m-d");
+  ($now > $annualEnd) ? $paidAnnual = false : $paidAnnual = true;
+}
+
+($paidMonthly && $paidAnnual) ? $subscribed = true : $subscribed = false;
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -116,13 +178,23 @@
     </div>
     <div class="main-cont">
       <div class="content">
+        <?php 
+        if($subscribed == false) {
+        ?>
+        <h2>Your subscription is currently <span class="text-red">due.</span></h2>
+        <?php
+        } else {
+        ?>
         <h2>Your subscription is currently <span class="text-green">ongoing.</span></h2>
+        <?php
+        }
+        ?>
         <div class="list-div">
           <div class="list-item left">
             <h4>Availed promo(s)</h4>
           </div>
           <div class="list-item right" style="display: flex; align-items: center !important; justify-content: flex-end;">
-            <h4>Student</h4>
+            <h4>N/A</h4>
             <i class="material-icons text-disabled" style="font-size: 13px">help</i>
           </div>
         </div>
@@ -131,8 +203,46 @@
             <h4>Monthly Subscription</h4>
           </div>
           <div class="list-item right">
-            <h4>P649.00 <span class="text-green" id="paydate">Paid</span></h4>
-            <small>Expires on 09/14/2020</small>
+            <h4>P750.00 
+            <?php 
+            if($paidMonthly) {
+            ?>
+            <span class="text-green" id="monthlypay">Paid</span>
+            <?php 
+            } else {
+            ?>
+            <span class="text-red" id="monthlypay">Due</span>
+            <?php
+            }
+            ?>
+            </h4>
+            <?php 
+            if($paidMonthly) {
+            ?>
+            <small>Expires on 
+            <?php 
+            $a = new DateTime($monthlyEnd);
+            $exp = $a->format("m/d/Y");
+            echo $exp;
+            ?>
+            </small>
+            <?php 
+            } else if(!$monthlyHasValue) {
+            ?>
+            <small>No payment</small>
+            <?php
+            } else {
+            ?>
+            <small>Expired on
+            <?php 
+            $a = new DateTime($monthlyEnd);
+            $exp = $a->format("m/d/Y");
+            echo $exp;
+            ?>
+            </small>
+            <?php
+            }
+            ?>
           </div>
         </div>
         <div class="list-div">
@@ -140,8 +250,46 @@
             <h4>Annual Membership</h4>
           </div>
           <div class="list-item right">
-            <h4>P199.00 <span class="text-green" id="paydate">Paid</span></h4>
-            <small>Expires on 08/06/2021</small>
+            <h4>P200.00 
+            <?php 
+            if($paidAnnual) {
+            ?>
+            <span class="text-green" id="annualpay">Paid</span>
+            <?php 
+            } else {
+            ?>
+            <span class="text-red" id="annualpay">Due</span>
+            <?php
+            }
+            ?>
+            </h4>
+            <?php 
+            if($paidAnnual) {
+            ?>
+            <small>Expires on
+            <?php 
+            $a = new DateTime($annualEnd);
+            $exp = $a->format("m/d/Y");
+            echo $exp;
+            ?>
+            </small>
+            <?php 
+            } else if(!$annualHasValue) {
+            ?>
+            <small>No payment</small>
+            <?php
+            } else {
+            ?>
+            <small>Expired on
+            <?php 
+            $a = new DateTime($annualEnd);
+            $exp = $a->format("m/d/Y");
+            echo $exp;
+            ?>
+            </small>
+            <?php
+            }
+            ?>
           </div>
         </div>
         <hr style="border: 1px solid black; width: 100%">
@@ -150,7 +298,7 @@
             <small>To pay</small>
           </div>
           <div class="list-item right">
-            <h4>P0.00</h4>
+            <h4 id="to-pay">P0.00</h4>
           </div>
         </div>
         <!-- <button class="btn btn-disabled fw-600">Pay P0.00</button> -->
@@ -164,12 +312,8 @@
     </div>
   </main>
 
+  <script src="http://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
   <script src="./../js/sidebar.js"></script>
-  <script>
-    window.onload = () => {
-
-    }
-  </script>
   <script src="https://www.paypal.com/sdk/js?client-id=sb&currency=USD" data-sdk-integration-source="button-factory"></script>
   <script>
     function initPayPalButton() {
@@ -200,6 +344,34 @@
       }).render('#paypal-button-container');
     }
     initPayPalButton();
+
+    window.onload = () => {
+      $("#confirm-logout").on("click", function() {
+        $.ajax({
+          url: "./../functions/logout_process.php",
+          type: "json",
+          method: "post",
+          success: function() {
+            window.location.reload();
+          }
+        });
+      });
+
+      
+
+      let m = $("#monthlypay").text();
+      let a = $("#annualpay").text();
+      let toPay = $("#to-pay");
+      if(m == 'Due' && a == 'Paid') {
+        toPay.text("P750.00");
+      } else if(m == 'Paid' && a == 'Due') {
+        toPay.text("P200.00");
+      } else if(m == 'Due' && a == 'Due') {
+        toPay.text("P950.00");
+      } else {
+        toPay.text("P0.00");
+      }
+    }
   </script>
 </body>
 </html>

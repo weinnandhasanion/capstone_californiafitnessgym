@@ -1,3 +1,20 @@
+<?php 
+require "./../functions/connect.php";
+session_start();
+
+if(!isset($_SESSION["user"]) && !isset($_SESSION["pass"])) {
+  header("Location: ./../index.php");
+}
+
+$sql = "SELECT * FROM paymentlog WHERE member_id = '".$_SESSION["member_id"]."' ORDER BY date_payment DESC";
+$res = mysqli_query($con, $sql);
+if(mysqli_num_rows($res)) {
+  $rows = array();
+  while($row = mysqli_fetch_assoc($res)) {
+    $rows[] = $row;
+  }
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -162,80 +179,32 @@
         </select>
       </div>
       <div class="history-div">
+        <?php 
+        foreach($rows as $row) {
+        ?>
         <div class="list-div">
-          <small class="payment-date fw-800 text-disabled">Aug 14 2020</small>
+          <small class="payment-date fw-800 text-disabled">
+          <?php 
+          $d = new DateTime($row["date_payment"]);
+          $date = $d->format("M d, Y");
+          echo $date;
+          ?>
+          </small>
           <hr>
           <div class="list-content">
             <div class="left">
-              <p class="payment-for fw-600">Monthly Subscription</p>
+              <p class="payment-for fw-600"><?php echo $row["payment_description"] ?></p>
               <a href="#" class="text-red">Details</a>
             </div>
             <div class="right">
-              <p class="payment-amount fw-600 text-green">P649.00</p>
+              <p class="payment-amount fw-600 text-green">P<?php echo $row["payment_amount"] ?>.00</p>
             </div>
           </div>
         </div>
-        <div class="list-div">
-          <small class="payment-date fw-800 text-disabled">Jul 14 2020</small>
-          <hr>
-          <div class="list-content">
-            <div class="left">
-              <p class="payment-for fw-600">Monthly Subscription</p>
-              <a href="#" class="text-red">Details</a>
-            </div>
-            <div class="right">
-              <p class="payment-amount fw-600 text-green">P649.00</p>
-            </div>
-          </div>
-        </div>
-        <div class="list-div">
-          <small class="payment-date fw-800 text-disabled">Jun 15 2020</small>
-          <hr>
-          <div class="list-content">
-            <div class="left">
-              <p class="payment-for fw-600">Monthly Subscription</p>
-              <a href="#" class="text-red">Details</a>
-            </div>
-            <div class="right">
-              <p class="payment-amount fw-600 text-green">P649.00</p>
-            </div>
-          </div>
-        </div>
-        <div class="list-div">
-          <small class="payment-date fw-800 text-disabled">May 06 2020</small>
-          <hr>
-          <div class="list-content">
-            <div class="left">
-              <p class="payment-for fw-600">Monthly Subscription</p>
-              <a href="#" class="text-red">Details</a>
-            </div>
-            <div class="right">
-              <p class="payment-amount fw-600 text-green">P649.00</p>
-            </div>
-          </div>
-        </div>
-        <div class="list-div">
-          <small class="payment-date fw-800 text-disabled">Aug 06 2019</small>
-          <hr>
-          <div class="list-content">
-            <div class="left">
-              <p class="payment-for fw-600">Monthly Subscription</p>
-              <a href="#" class="text-red">Details</a>
-            </div>
-            <div class="right">
-              <p class="payment-amount fw-600 text-green">P649.00</p>
-            </div>
-          </div>
-          <div class="list-content">
-            <div class="left">
-              <p class="payment-for fw-600">Annual Membership</p>
-              <a href="#" class="text-red">Details</a>
-            </div>
-            <div class="right">
-              <p class="payment-amount fw-600 text-green">P199.00</p>
-            </div>
-          </div>
-        </div>
+        <?php
+        }
+        ?>
+        
       </div>
       <div class="print-cont">
         <button class="btn btn-reg">Print payment history</button>

@@ -20,6 +20,7 @@
   <title>Profile Page</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./../css/profile.css">
+  <link rel="stylesheet" href="./../css/sidebar.css">
   <link rel="icon" href="./../img/gym_logo.png">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
@@ -73,18 +74,18 @@
         <div class="close-modal">
           <span href="#" onclick="closeModal(this.parentNode.parentNode.parentNode.parentNode)">&#x2716;</span>
         </div>
-        <h2 class="text-center">Your subscription is currently ongoing.</h2>
+        <h2 class="text-center" id="paid"></h2>
         <div class="sub-cont">
           <h3>Monthly Subscription</h3>
-          <p class="fw-600">Paid</p>
-          <p>Last payment: Aug 14, 2020</p>
-          <p>Expires on: Sep 14, 2020</p>
+          <p class="fw-600" id="mpaid"></p>
+          <p id="mstart"></p>
+          <p id="mend"></p>
         </div>
         <div class="sub-cont">
           <h3>Annual Subscription</h3>
-          <p class="fw-600">Paid</p>
-          <p>Last payment: Aug 06, 2020</p>
-          <p>Expires on: Aug 06, 2021</p>
+          <p class="fw-600" id="apaid"></p>
+          <p id="astart"></p>
+          <p id="aend"></p>
         </div>
         <div class="modal-footer-btn">
           <a href="./pay.php">
@@ -295,6 +296,50 @@
       
       // subscription modal
       subBtn.onclick = () => {
+
+        $.ajax({
+          url: "./../functions/subscription_details.php",
+          type: 'json',
+          success: function(data) {
+            data = JSON.parse(data);
+            if(data.apaid && data.mpaid) {
+              $("#paid").text("Your subscription is currently ongoing.");
+            } else {
+              $("#paid").text("Your subscription is currently due");
+            }
+            if(data.mpaid) {
+              $("#mpaid").text("Paid");
+            } else {
+              $("#mpaid").text("Due");
+            }
+            if(data.apaid) {
+              $("#apaid").text("Paid");
+            } else {
+              $("#apaid").text("Due");
+            }
+            if(data.mstart != "No payment") {
+              $("#mstart").text(`Last payment: ${data.mstart}`);
+            } else {
+              $("#mstart").text(data.mstart);
+            }
+            if(data.mend != "No payment") {
+              $("#mend").text(`Subscription expiry: ${data.mend}`);
+            } else {
+              $("#mend").text("");
+            }
+            if(data.astart != "No payment") {
+              $("#astart").text(`Last payment: ${data.astart}`);
+            } else {
+              $("#astart").text(data.astart);
+            }
+            if(data.aend != "No payment") {
+              $("#aend").text(`Subscription expiry: ${data.aend}`);
+            } else {
+              $("#aend").text("");
+            }
+          }
+        });
+
         subModal.style.display = 'flex';
         document.addEventListener('click', (e) => {
           if(e.target == subModal) {

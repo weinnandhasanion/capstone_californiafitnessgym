@@ -61,7 +61,6 @@ if(!$result) {
     }
 
     .icon-div img {
-      /* clip-path: circle(50.0% at 50% 50%); */
       min-height: 100%;
       max-width: 100%;
     }    

@@ -2,13 +2,12 @@
 require "./connect.php";
 session_start();
 
-$pass = $_POST["pass"];
+$pass = password_hash($_POST["pass"], PASSWORD_DEFAULT);
 
-$sql = "UPDATE member SET password = '$pass' WHERE username = '". $_SESSION["user"] ."' AND password = '". $_SESSION["pass"] ."'";
+$sql = "UPDATE member SET password = '$pass' WHERE member_id = '". $_SESSION["member_id"] ."'";
 $result = mysqli_query($con, $sql);
 
 if($result) {
-  $_SESSION["pass"] = $pass;
   echo 1;
 } else {
   echo 0;

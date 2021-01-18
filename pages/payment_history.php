@@ -8,10 +8,134 @@ if(!isset($_SESSION["user"]) && !isset($_SESSION["pass"])) {
 
 $sql = "SELECT * FROM paymentlog WHERE member_id = '".$_SESSION["member_id"]."' ORDER BY date_payment DESC";
 $res = mysqli_query($con, $sql);
-if(mysqli_num_rows($res)) {
+if(mysqli_num_rows($res) > 0) {
   $rows = array();
   while($row = mysqli_fetch_assoc($res)) {
     $rows[] = $row;
+  }
+
+  function getData(string $ts) {
+    switch($ts) {
+      case "alltime":
+        include "./../functions/connect.php";
+        $sql = "SELECT * FROM paymentlog 
+                WHERE member_id = '".$_SESSION["member_id"]."' 
+                ORDER BY date_payment DESC";
+        $res = mysqli_query($con, $sql);
+        if(mysqli_num_rows($res) > 0) {
+          $rows = array();
+          while($row = mysqli_fetch_assoc($res)) {
+            $date = new DateTime($row["date_payment"]);
+            $formatted = $date->format("M d, Y");
+            $row["date_payment"] = $formatted;
+            $rows[] = $row;
+          }
+
+          return $rows;
+        } else {
+          return 0;
+        }
+      case "today":
+        include "./../functions/connect.php";
+        $now = date("Y-m-d");
+        $sql = "SELECT * FROM paymentlog 
+                WHERE member_id = '".$_SESSION["member_id"]."'
+                AND date_payment = '$now'
+                ORDER BY date_payment DESC";
+        $res = mysqli_query($con, $sql);
+        if(mysqli_num_rows($res) > 0) {
+          $rows = array();
+          while($row = mysqli_fetch_assoc($res)) {
+            $date = new DateTime($row["date_payment"]);
+            $formatted = $date->format("M d, Y");
+            $row["date_payment"] = $formatted;
+            $rows[] = $row;
+          }
+
+          return $rows;
+        } else {
+          return 0;
+        }
+      case "yesterday":
+        include "./../functions/connect.php";
+        $now = date("Y-m-d");
+        $yesterday = date("Y-m-d", strtotime($now. " - 1 days"));
+        $sql = "SELECT * FROM paymentlog 
+                WHERE member_id = '".$_SESSION["member_id"]."'
+                AND date_payment = '$yesterday'
+                ORDER BY date_payment DESC";
+        $res = mysqli_query($con, $sql);
+        if(mysqli_num_rows($res) > 0) {
+          $rows = array();
+          while($row = mysqli_fetch_assoc($res)) {
+            $date = new DateTime($row["date_payment"]);
+            $formatted = $date->format("M d, Y");
+            $row["date_payment"] = $formatted;
+            $rows[] = $row;
+          }
+
+          return $rows;
+        } else {
+          return 0;
+        }
+      case "last7days":
+        include "./../functions/connect.php";
+        $now = date("Y-m-d");
+        $refdate = date("Y-m-d", strtotime($now. " - 7 days"));
+        $sql = "SELECT * FROM paymentlog 
+                WHERE member_id = '".$_SESSION["member_id"]."'
+                AND date_payment <= '$now'
+                AND date_payment >= '$refdate'
+                ORDER BY date_payment DESC";
+        $res = mysqli_query($con, $sql);
+        if(mysqli_num_rows($res) > 0) {
+          $rows = array();
+          while($row = mysqli_fetch_assoc($res)) {
+            $date = new DateTime($row["date_payment"]);
+            $formatted = $date->format("M d, Y");
+            $row["date_payment"] = $formatted;
+            $rows[] = $row;
+          }
+
+          return $rows;
+        } else {
+          return 0;
+        }
+      case "last30days":
+        include "./../functions/connect.php";
+        $now = date("Y-m-d");
+        $refdate = date("Y-m-d", strtotime($now. " - 30 days"));
+        $sql = "SELECT * FROM paymentlog 
+                WHERE member_id = '".$_SESSION["member_id"]."'
+                AND date_payment <= '$now'
+                AND date_payment >= '$refdate'
+                ORDER BY date_payment DESC";
+        $res = mysqli_query($con, $sql);
+        if(mysqli_num_rows($res) > 0) {
+          $rows = array();
+          while($row = mysqli_fetch_assoc($res)) {
+            $date = new DateTime($row["date_payment"]);
+            $formatted = $date->format("M d, Y");
+            $row["date_payment"] = $formatted;
+            $rows[] = $row;
+          }
+
+          return $rows;
+        } else {
+          return 0;
+        }
+    }
+  }
+
+  if(isset($_POST["timestamp"])){
+    $data = getData($_POST["timestamp"]);
+    echo json_encode($data);
+    exit();
+  }
+} else {
+  if(isset($_POST["timestamp"])){
+    echo 0;
+    exit();
   }
 }
 ?>
@@ -23,7 +147,7 @@ if(mysqli_num_rows($res)) {
   <title>Payment History Page</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./../css/default.css">
-
+  <link rel="stylesheet" href="./../css/loader.css">
   <link rel="icon" href="./../img/gym_logo.png">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
@@ -94,6 +218,13 @@ if(mysqli_num_rows($res)) {
 
     .list-content a {
       font-size: 14px;
+    }
+
+    .no-value {
+      display: flex;
+      height: 100%;
+      justify-content: center;
+      align-items: center;
     }
   </style>
 </head>
@@ -182,9 +313,10 @@ if(mysqli_num_rows($res)) {
           <option value="last30days">Last 30 days</option>
         </select>
       </div>
-      <div class="history-div">
+      <div class="history-div" id="history-div">
         <?php 
-        foreach($rows as $row) {
+        if(mysqli_num_rows($res) > 0) {
+          foreach($rows as $row) {
         ?>
         <div class="list-div">
           <small class="payment-date fw-800 text-disabled">
@@ -198,7 +330,7 @@ if(mysqli_num_rows($res)) {
           <div class="list-content">
             <div class="left">
               <p class="payment-for fw-600"><?php echo $row["payment_description"] ?></p>
-              <a href="#" class="text-red">Details</a>
+              <a href="#" class="text-red deets" id="<?php echo $row["payment_id"] ?>">Details</a>
             </div>
             <div class="right">
               <p class="payment-amount fw-600 text-green">P<?php echo $row["payment_amount"] ?>.00</p>
@@ -206,21 +338,87 @@ if(mysqli_num_rows($res)) {
           </div>
         </div>
         <?php
+          }
+        } else {
+        ?>
+        <div class="no-value" id="no-value">
+          <p class="text-disabled">No payments to show.</p>
+        </div>
+        <?php
         }
         ?>
         
       </div>
       <div class="print-cont">
-        <button class="btn btn-reg">Print payment history</button>
+        <button id="print-btn" class="btn btn-reg">Print payment history</button>
       </div>
     </div>
   </main>
 
+  <script src="http://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
   <script src="./../js/sidebar.js"></script>
   <script>
-    $("#loader").css("display", "flex");
-    $(document).ready(function() {
+    window.addEventListener('load', () => {
       $("#loader").css("display", "none");
+
+      $("#timestamp").change(function() {
+        $.ajax({
+          url: './payment_history.php',
+          method: 'post',
+          type: 'json',
+          data: {
+            timestamp: $("#timestamp").val()
+          },
+          success: function(data) {
+            arr = JSON.parse(data);
+
+            let mainDiv = $("#history-div");
+            mainDiv.empty();
+            
+            if(arr != 0) {
+              arr.forEach(row => {
+                let html = `<div class="list-div">
+                              <small class="payment-date fw-800 text-disabled">
+                              ${row.date_payment}
+                              </small>
+                              <hr>
+                              <div class="list-content">
+                                <div class="left">
+                                  <p class="payment-for fw-600">
+                                  ${row.payment_description}
+                                  </p>
+                                  <a href="#" class="text-red" id="${row.payment_id}">Details</a>
+                                </div>
+                                <div class="right">
+                                  <p class="payment-amount fw-600 text-green">
+                                  P${row.payment_amount}.00
+                                  </p>
+                                </div>
+                              </div>
+                            </div>`;
+                mainDiv.append(html);
+              });
+            } else {
+              let html = `<div class="no-value" id="no-value">
+                            <p class="text-disabled">No payments to show.</p>
+                          </div>`;
+              mainDiv.append(html);
+            }
+          }
+        });
+      });
+
+      $("#print-btn").on("click", function () {
+        let divContents = $("#history-div").html();
+        let printWindow = window.open('', '', 'height=400,width=800');
+        printWindow.document.write('<html><head><title>Payment History</title>');
+        printWindow.document.write('<style>.deets{display:none;}hr{display:none;}.list-content{display:flex;width:50%;justify-content:space-between;}</style>');
+        printWindow.document.write('</head><body >');
+        printWindow.document.write(divContents);
+        printWindow.document.write('</body></html>');
+        printWindow.document.close();
+        printWindow.print();
+      });
     })
   </script>
 </body>

@@ -2,11 +2,11 @@
   require "./../functions/connect.php";
   session_start();
 
-  if(!isset($_SESSION["user"]) && !isset($_SESSION["pass"])) {
+  if(!isset($_SESSION["member_id"])) {
     header("Location: ./../index.php");
   }
 
-  $sql = "SELECT * FROM member WHERE username = '". $_SESSION["user"] ."' AND password = '". $_SESSION["pass"] ."'";
+  $sql = "SELECT * FROM member WHERE member_id = '". $_SESSION["member_id"] ."'";
   $result = mysqli_query($con, $sql);
 
   $row = mysqli_fetch_assoc($result);
@@ -86,7 +86,7 @@
           <p id="mend"></p>
         </div>
         <div class="sub-cont">
-          <h3>Annual Subscription</h3>
+          <h3>Annual Membership</h3>
           <p class="fw-600" id="apaid"></p>
           <p id="astart"></p>
           <p id="aend"></p>
@@ -206,7 +206,7 @@
         </span>
         <span>
           <i class="material-icons">card_membership</i>
-          <small>Subscription ongoing</small>
+          <small id="iconpaid">Subscription ongoing</small>
         </span>
       </div>
       <div class="member-info">
@@ -279,9 +279,79 @@
   <script src="./../js/sidebar.js"></script>
   <script src="./../js/qr-code/qrcode.min.js"></script>
   <script>
-    $("#loader").css("display", "flex");
-    window.onload = () => {
+    window.addEventListener("load", () => {
       $("#loader").css("display", "none");
+    });
+
+    window.onload = () => {
+      $.ajax({
+        url: "./../functions/subscription_details.php",
+        type: 'json',
+        success: function(data) {
+          data = JSON.parse(data);
+          if(data.apaid && data.mpaid) {
+            $("#paid").text("Your subscription is currently ongoing.");
+            $("#iconpaid").text("Subscription ongoing");
+          } else {
+            $("#paid").text("Your subscription is currently due");
+            $("#iconpaid").text("Subscription due");
+          }
+          if(data.mpaid) {
+            $("#mpaid").text("Paid");
+            if(data.mstart != "No payment") {
+              $("#mstart").text(`Last payment: ${data.mstart}`);
+            } else {
+              $("#mstart").text(data.mstart);
+            }
+
+            if(data.mend != "No payment") {
+              $("#mend").text(`Expires on: ${data.mend}`);
+            } else {
+              $("#mend").text("");
+            }
+          } else {
+            $("#mpaid").text("Due");
+            if(data.mstart != "No payment") {
+              $("#mstart").text(`Last payment: ${data.mstart}`);
+            } else {
+              $("#mstart").text(data.mstart);
+            }
+            
+            if(data.mend != "No payment") {
+              $("#mend").text(`Expired on: ${data.mend}`);
+            } else {
+              $("#mend").text("");
+            }
+          }
+
+          if(data.apaid) {
+            $("#apaid").text("Paid");
+            if(data.astart != "No payment") {
+              $("#astart").text(`Last payment: ${data.astart}`);
+            } else {
+              $("#astart").text(data.astart);
+            }
+            if(data.aend != "No payment") {
+              $("#aend").text(`Expires on: ${data.aend}`);
+            } else {
+              $("#aend").text("");
+            }
+          } else {
+            $("#apaid").text("Due");
+            if(data.astart != "No payment") {
+              $("#astart").text(`Last payment: ${data.astart}`);
+            } else {
+              $("#astart").text(data.astart);
+            }
+            if(data.aend != "No payment") {
+              $("#aend").text(`Expired on: ${data.aend}`);
+            } else {
+              $("#aend").text("");
+            }
+          }
+        }
+      });
+
       $("#confirm-logout").on("click", function() {
         $.ajax({
           url: "./../functions/logout_process.php",
@@ -302,50 +372,6 @@
       
       // subscription modal
       subBtn.onclick = () => {
-
-        $.ajax({
-          url: "./../functions/subscription_details.php",
-          type: 'json',
-          success: function(data) {
-            data = JSON.parse(data);
-            if(data.apaid && data.mpaid) {
-              $("#paid").text("Your subscription is currently ongoing.");
-            } else {
-              $("#paid").text("Your subscription is currently due");
-            }
-            if(data.mpaid) {
-              $("#mpaid").text("Paid");
-            } else {
-              $("#mpaid").text("Due");
-            }
-            if(data.apaid) {
-              $("#apaid").text("Paid");
-            } else {
-              $("#apaid").text("Due");
-            }
-            if(data.mstart != "No payment") {
-              $("#mstart").text(`Last payment: ${data.mstart}`);
-            } else {
-              $("#mstart").text(data.mstart);
-            }
-            if(data.mend != "No payment") {
-              $("#mend").text(`Subscription expiry: ${data.mend}`);
-            } else {
-              $("#mend").text("");
-            }
-            if(data.astart != "No payment") {
-              $("#astart").text(`Last payment: ${data.astart}`);
-            } else {
-              $("#astart").text(data.astart);
-            }
-            if(data.aend != "No payment") {
-              $("#aend").text(`Subscription expiry: ${data.aend}`);
-            } else {
-              $("#aend").text("");
-            }
-          }
-        });
-
         subModal.style.display = 'flex';
         document.addEventListener('click', (e) => {
           if(e.target == subModal) {

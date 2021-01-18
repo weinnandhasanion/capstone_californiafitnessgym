@@ -208,7 +208,9 @@ p, h1, h2, h3, h4, h5, h6 {
       -ms-flex-align: center;
           align-items: center;
   margin: 0;
-  display: none;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
   background: white;
 }
 

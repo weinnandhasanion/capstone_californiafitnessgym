@@ -2,7 +2,7 @@
 require "./../functions/connect.php";
 session_start();
 
-if(!isset($_SESSION["user"]) && !isset($_SESSION["pass"])) {
+if(!isset($_SESSION["member_id"])) {
   header("Location: ./../index.php");
 }
 
@@ -12,7 +12,10 @@ $subscribed = false;
 $paidMonthly = false;
 $paidAnnual = false;
 
-$sql = "SELECT * FROM paymentlog WHERE member_id = '".$_SESSION["member_id"]."' AND payment_description = 'Monthly Subscription' ORDER BY date_payment DESC";
+$sql = "SELECT * FROM paymentlog 
+      WHERE member_id = '".$_SESSION["member_id"]."' 
+      AND payment_description = 'Monthly Subscription' 
+      ORDER BY date_payment DESC";
 $res = mysqli_query($con, $sql);
 if(mysqli_num_rows($res) > 0) {
   $monthlyHasValue = true;
@@ -22,15 +25,18 @@ if(mysqli_num_rows($res) > 0) {
   }
 
   $monthly = $monthlyData[0];
-  $x = new DateTime($monthly["date_payment"]);
+  $date = new DateTime($monthly["date_payment"]);
   
-  $monthlyStart = $x->format('Y-m-d');
+  $monthlyStart = $date->format('Y-m-d');
   $monthlyEnd = date("Y-m-d", strtotime($monthlyStart. " + 30 days"));
 } else {
   $monthlyHasValue = false;
 }
 
-$sql2 = "SELECT * FROM paymentlog WHERE member_id = '".$_SESSION["member_id"]."' AND payment_description = 'Annual Subscription' ORDER BY date_payment DESC";
+$sql2 = "SELECT * FROM paymentlog 
+      WHERE member_id = '".$_SESSION["member_id"]."' 
+      AND payment_description = 'Annual Subscription' 
+      ORDER BY date_payment DESC";
 $res2 = mysqli_query($con, $sql2);
 if(mysqli_num_rows($res2) > 0) {
   $annualHasValue = true;
@@ -68,6 +74,7 @@ if($annualHasValue) {
   <title>Pay Page</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./../css/default.css">
+  <link rel="stylesheet" href="./../css/loader.css">
   <link rel="icon" href="./../img/gym_logo.png">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
@@ -319,7 +326,6 @@ if($annualHasValue) {
   <script src="./../js/sidebar.js"></script>
   <script src="https://www.paypal.com/sdk/js?client-id=sb&currency=USD" data-sdk-integration-source="button-factory"></script>
   <script>
-    $("#loader").css("display", "flex");
     function initPayPalButton() {
       paypal.Buttons({
         style: {

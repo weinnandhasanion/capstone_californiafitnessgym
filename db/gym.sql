@@ -1,162 +1,369 @@
-CREATE DATABASE gym;
-USE gym;
+-- phpMyAdmin SQL Dump
+-- version 5.0.4
+-- https://www.phpmyadmin.net/
+--
+-- Host: 127.0.0.1
+-- Generation Time: Jan 18, 2021 at 06:13 AM
+-- Server version: 10.4.17-MariaDB
+-- PHP Version: 7.4.13
 
-CREATE TABLE admin(
-    admin_id INT(100) PRIMARY KEY AUTO_INCREMENT,
-    username VARCHAR(100),
-    password VARCHAR(100),
-    first_name VARCHAR(100),
-    last_name VARCHAR(100)
-);
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+
+--
+-- Database: `gym`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `admin`
+--
+
+CREATE TABLE `admin` (
+  `admin_id` int(100) NOT NULL,
+  `username` varchar(100) DEFAULT NULL,
+  `password` varchar(100) DEFAULT NULL,
+  `first_name` varchar(100) DEFAULT NULL,
+  `last_name` varchar(100) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `admin`
+--
+
+INSERT INTO `admin` (`admin_id`, `username`, `password`, `first_name`, `last_name`) VALUES
+(87000, 'weinnandhasanion@gmail.com', '$2y$10$zvwz64YceTEcszZ96DAJmOfHbX.ABS679sGyy.PQtlzmnoNx1nX0m', 'Weinnand', 'Hasanion');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `inventory`
+--
+
+CREATE TABLE `inventory` (
+  `inventory_id` int(100) NOT NULL,
+  `inventory_name` varchar(100) DEFAULT NULL,
+  `inventory_category` enum('Cardio Equipment','Weight Equipment') DEFAULT NULL,
+  `inventory_qty` int(255) DEFAULT NULL,
+  `inventory_damage` int(255) DEFAULT NULL,
+  `inventory_working` int(255) DEFAULT NULL,
+  `inventory_description` varchar(255) DEFAULT NULL,
+  `date_deleted` date DEFAULT NULL,
+  `date_added` date DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `logtrail_login`
+--
+
+CREATE TABLE `logtrail_login` (
+  `login_id` int(100) NOT NULL,
+  `admin_id` int(100) DEFAULT NULL,
+  `dateandtime_login` datetime DEFAULT current_timestamp(),
+  `first_name` varchar(100) DEFAULT NULL,
+  `last_name` varchar(100) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `logtrail_logout`
+--
+
+CREATE TABLE `logtrail_logout` (
+  `logout_id` int(100) NOT NULL,
+  `admin_id` int(100) DEFAULT NULL,
+  `dateandtime_logout` datetime DEFAULT current_timestamp(),
+  `first_name` varchar(100) DEFAULT NULL,
+  `last_name` varchar(100) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `member`
+--
+
+CREATE TABLE `member` (
+  `member_id` int(100) NOT NULL,
+  `first_name` varchar(100) DEFAULT NULL,
+  `last_name` varchar(100) DEFAULT NULL,
+  `username` varchar(100) DEFAULT NULL,
+  `password` varchar(100) DEFAULT NULL,
+  `passwordChanged` tinyint(1) DEFAULT NULL,
+  `gender` enum('M','F') DEFAULT NULL,
+  `birthdate` date DEFAULT NULL,
+  `email` varchar(100) DEFAULT NULL,
+  `phone` varchar(11) DEFAULT NULL,
+  `member_status` enum('Paid','Expired') NOT NULL,
+  `date_registered` date DEFAULT NULL,
+  `date_deleted` date DEFAULT NULL,
+  `start_subscription` date DEFAULT NULL,
+  `end_subscription` date DEFAULT NULL,
+  `member_type` enum('Regular','Walk-in') DEFAULT NULL,
+  `address` varchar(100) DEFAULT NULL,
+  `acc_status` enum('active','inactive') NOT NULL,
+  `admin_id` int(100) DEFAULT NULL,
+  `program_name` varchar(100) DEFAULT NULL,
+  `image_pathname` varchar(9999) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `member`
+--
+
+INSERT INTO `member` (`member_id`, `first_name`, `last_name`, `username`, `password`, `passwordChanged`, `gender`, `birthdate`, `email`, `phone`, `member_status`, `date_registered`, `date_deleted`, `start_subscription`, `end_subscription`, `member_type`, `address`, `acc_status`, `admin_id`, `program_name`, `image_pathname`) VALUES
+(1921681000, 'Weinnand', 'Hasanion', 'weinnandhasanion', '$2y$10$5yGbb3Iv6D9nLogDVEUg0.REP462avUG6pq49LTNPKVSpqoWnjtfe', NULL, 'M', '1999-08-04', 'weinnandhasanion@gmail.com', '09206013530', 'Paid', '2021-01-18', NULL, NULL, NULL, 'Regular', 'Cebu City, Philippines', 'active', NULL, NULL, 'logo.png'),
+(1921681001, 'John', 'Doe', '1921681001', '$2y$10$cRcmG1j0XuzWspY/Osn62OX5ztHuSz0lRwSkTHvaSB5p18ZEbHQo2', NULL, 'M', '1977-01-01', 'johndoe@gmail.com', '09151234567', 'Paid', '2021-01-18', NULL, NULL, NULL, 'Regular', 'Cebu City, Philippines', 'active', NULL, NULL, '');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `memberpromos`
+--
+
+CREATE TABLE `memberpromos` (
+  `id` int(100) NOT NULL,
+  `promo_id` int(100) DEFAULT NULL,
+  `member_id` int(100) DEFAULT NULL,
+  `date_added` date DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `paymentlog`
+--
+
+CREATE TABLE `paymentlog` (
+  `payment_id` int(100) NOT NULL,
+  `member_id` int(100) DEFAULT NULL,
+  `first_name` varchar(100) DEFAULT NULL,
+  `last_name` varchar(100) DEFAULT NULL,
+  `payment_description` enum('Monthly Subscription','Annual Subscription','Walk-in') DEFAULT NULL,
+  `payment_type` enum('Cash','Online') NOT NULL,
+  `date_payment` date DEFAULT NULL,
+  `payment_amount` enum('750','200','50') DEFAULT NULL,
+  `admin_id` int(100) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `program`
+--
+
+CREATE TABLE `program` (
+  `program_id` int(100) NOT NULL,
+  `program_name` varchar(100) DEFAULT NULL,
+  `program_type` varchar(100) DEFAULT NULL,
+  `date_added` date DEFAULT NULL,
+  `date_deleted` date DEFAULT NULL,
+  `program_description` varchar(500) DEFAULT NULL,
+  `program_status` enum('active','remove') NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `promo`
+--
+
+CREATE TABLE `promo` (
+  `promo_id` int(100) NOT NULL,
+  `promo_name` varchar(255) DEFAULT NULL,
+  `promo_status` varchar(255) DEFAULT NULL,
+  `promo_description` varchar(255) DEFAULT NULL,
+  `date_added` date DEFAULT NULL,
+  `promo_starting_date` date DEFAULT NULL,
+  `promo_ending_date` date DEFAULT NULL,
+  `amount` int(100) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `trainer`
+--
+
+CREATE TABLE `trainer` (
+  `trainer_id` int(100) NOT NULL,
+  `trainer_status` enum('active','inactive') NOT NULL,
+  `trainer_position` enum('junior','senior') NOT NULL,
+  `first_name` varchar(100) DEFAULT NULL,
+  `last_name` varchar(100) DEFAULT NULL,
+  `address` varchar(100) DEFAULT NULL,
+  `gender` enum('M','F') DEFAULT NULL,
+  `phone` varchar(11) DEFAULT NULL,
+  `email` varchar(100) DEFAULT NULL,
+  `file` blob DEFAULT NULL,
+  `birthdate` date DEFAULT NULL,
+  `date_hired` date DEFAULT NULL,
+  `date_deleted` date DEFAULT NULL,
+  `acc_status` enum('able','disable') NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `admin`
+--
 ALTER TABLE `admin`
-  MODIFY `admin_id` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=87000;
+  ADD PRIMARY KEY (`admin_id`);
 
-CREATE TABLE program(
-    program_id INT(100) PRIMARY KEY,
-    program_name VARCHAR(100),
-    program_type VARCHAR(100),
-    date_added DATE,
-    date_deleted DATE,
-    program_description VARCHAR(500),
-    program_status ENUM('active','remove')NOT NULL
-);
-ALTER TABLE `program`
-  MODIFY `program_id` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT= 1001;
+--
+-- Indexes for table `inventory`
+--
+ALTER TABLE `inventory`
+  ADD PRIMARY KEY (`inventory_id`);
 
+--
+-- Indexes for table `logtrail_login`
+--
+ALTER TABLE `logtrail_login`
+  ADD PRIMARY KEY (`login_id`),
+  ADD KEY `admin_id` (`admin_id`);
 
-CREATE TABLE member(
-    member_id INT(100) PRIMARY KEY,
-    first_name VARCHAR(100),
-    last_name VARCHAR(100),
-    username VARCHAR(100),
-    password VARCHAR(100),
-    passwordChanged TINYINT(1),
-    gender ENUM('M','F'),
-    birthdate DATE,
-    email VARCHAR(100),
-    phone VARCHAR(11),
-    member_status ENUM('Paid', 'Expired') NOT NULL,
-    date_registered DATE,
-    date_deleted DATE,
-    start_subscription DATE,
-    end_subscription DATE,
-    member_type ENUM('Regular','Walk-in'),
-    address VARCHAR(100),
-    acc_status ENUM('active','inactive') NOT NULL,
-    admin_id INT(100),
-    payment_description ENUM('Monthly Subscription', 'Annual Subscription', 'Walk-in'),
-    payment_type ENUM('Cash','Online') NOT NULL,
-    date_payment DATE, 
-    payment_amount ENUM('750','200','50'),
-    program_name VARCHAR(100)
-);
+--
+-- Indexes for table `logtrail_logout`
+--
+ALTER TABLE `logtrail_logout`
+  ADD PRIMARY KEY (`logout_id`),
+  ADD KEY `admin_id` (`admin_id`);
+
+--
+-- Indexes for table `member`
+--
 ALTER TABLE `member`
-  MODIFY `member_id` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1921681000;
+  ADD PRIMARY KEY (`member_id`);
 
-CREATE TABLE promo(
-  promo_id INT(100) PRIMARY KEY,
-  promo_name VARCHAR(255),
-  promo_status VARCHAR(255),
-  promo_description VARCHAR(255),
-  date_added DATE,
-  promo_starting_date DATE,
-  promo_ending_date DATE,
-  amount INT(100)
-);
+--
+-- Indexes for table `memberpromos`
+--
+ALTER TABLE `memberpromos`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `promo_id` (`promo_id`),
+  ADD KEY `member_id` (`member_id`);
 
-CREATE TABLE memberPromos(
-  id INT(100) PRIMARY KEY,
-  promo_id INT(100),
-  member_id INT(100),
-  date_added DATE
-);
+--
+-- Indexes for table `paymentlog`
+--
+ALTER TABLE `paymentlog`
+  ADD PRIMARY KEY (`payment_id`),
+  ADD KEY `member_id` (`member_id`);
 
-ALTER TABLE memberPromos
-ADD FOREIGN KEY (promo_id) REFERENCES promo(promo_id);
-ALTER TABLE memberPromos
-ADD FOREIGN KEY (member_id) REFERENCES member(member_id);
+--
+-- Indexes for table `program`
+--
+ALTER TABLE `program`
+  ADD PRIMARY KEY (`program_id`);
 
-CREATE TABLE trainer(
-    trainer_id INT(100) PRIMARY KEY,
-    trainer_status ENUM('active','inactive') NOT NULL,
-    trainer_position ENUM('junior','senior') NOT NULL,
-    first_name VARCHAR(100),
-    last_name VARCHAR(100),
-    address VARCHAR(100),
-    gender ENUM('M','F'),
-    phone VARCHAR(11),
-    email VARCHAR(100),
-    file BLOB,
-    birthdate DATE,
-    date_hired DATE, 
-    date_deleted DATE,
-    acc_status ENUM('able','disable') NOT NULL
-);
+--
+-- Indexes for table `promo`
+--
+ALTER TABLE `promo`
+  ADD PRIMARY KEY (`promo_id`);
+
+--
+-- Indexes for table `trainer`
+--
+ALTER TABLE `trainer`
+  ADD PRIMARY KEY (`trainer_id`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `admin`
+--
+ALTER TABLE `admin`
+  MODIFY `admin_id` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=87001;
+
+--
+-- AUTO_INCREMENT for table `inventory`
+--
+ALTER TABLE `inventory`
+  MODIFY `inventory_id` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=110;
+
+--
+-- AUTO_INCREMENT for table `logtrail_login`
+--
+ALTER TABLE `logtrail_login`
+  MODIFY `login_id` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3100;
+
+--
+-- AUTO_INCREMENT for table `logtrail_logout`
+--
+ALTER TABLE `logtrail_logout`
+  MODIFY `logout_id` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3100;
+
+--
+-- AUTO_INCREMENT for table `member`
+--
+ALTER TABLE `member`
+  MODIFY `member_id` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1921681002;
+
+--
+-- AUTO_INCREMENT for table `paymentlog`
+--
+ALTER TABLE `paymentlog`
+  MODIFY `payment_id` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9262;
+
+--
+-- AUTO_INCREMENT for table `program`
+--
+ALTER TABLE `program`
+  MODIFY `program_id` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1001;
+
+--
+-- AUTO_INCREMENT for table `trainer`
+--
 ALTER TABLE `trainer`
   MODIFY `trainer_id` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1510;
-  
 
-CREATE TABLE paymentLog(
-    payment_id INT(100) PRIMARY KEY,
-    member_id INT(100),
-    first_name VARCHAR(100),
-    last_name VARCHAR(100),
-    payment_description ENUM('Monthly Subscription', 'Annual Subscription', 'Walk-in'),
-    payment_type ENUM('Cash','Online') NOT NULL,
-    date_payment DATE, 
-    payment_amount ENUM('750','200','50'),
-    admin_id INT(100)
-   
-);
-ALTER TABLE `paymentLog`
-  MODIFY `payment_id` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=09260;
+--
+-- Constraints for dumped tables
+--
 
-ALTER TABLE paymentlog
-ADD FOREIGN KEY (member_id) REFERENCES member(member_id);
-
-
-CREATE TABLE inventory(
-  inventory_id INT(100) PRIMARY KEY,
-  inventory_name VARCHAR(100),
-  inventory_category ENUM('Cardio Equipment','Weight Equipment'),
-  inventory_qty INT(255),
-  inventory_damage INT(255),
-  inventory_working INT(255),
-  inventory_description VARCHAR(255),
-  date_deleted DATE,
-  date_added DATE
-);
-ALTER TABLE `inventory`
-  MODIFY `inventory_id` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT= 110;
-  
-CREATE TABLE logtrail_login(
-    login_id INT(100) PRIMARY KEY AUTO_INCREMENT,
-    admin_id INT(100),
-    dateandtime_login  DATETIME DEFAULT CURRENT_TIMESTAMP,
-    first_name VARCHAR(100),
-    last_name VARCHAR(100)
-);
+--
+-- Constraints for table `logtrail_login`
+--
 ALTER TABLE `logtrail_login`
-  MODIFY `login_id` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT= 3100;
-ALTER TABLE logtrail_login
-ADD FOREIGN KEY (admin_id) REFERENCES admin(admin_id);
+  ADD CONSTRAINT `logtrail_login_ibfk_1` FOREIGN KEY (`admin_id`) REFERENCES `admin` (`admin_id`);
 
-
-CREATE TABLE logtrail_logout(
-    logout_id INT(100) PRIMARY KEY AUTO_INCREMENT,
-    admin_id INT(100),
-    dateandtime_logout  DATETIME DEFAULT CURRENT_TIMESTAMP,
-    first_name VARCHAR(100),
-    last_name VARCHAR(100)
-);
+--
+-- Constraints for table `logtrail_logout`
+--
 ALTER TABLE `logtrail_logout`
-  MODIFY `logout_id` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT= 3100;
-ALTER TABLE logtrail_logout
-ADD FOREIGN KEY (admin_id) REFERENCES admin(admin_id);
-  
+  ADD CONSTRAINT `logtrail_logout_ibfk_1` FOREIGN KEY (`admin_id`) REFERENCES `admin` (`admin_id`);
 
+--
+-- Constraints for table `memberpromos`
+--
+ALTER TABLE `memberpromos`
+  ADD CONSTRAINT `memberpromos_ibfk_1` FOREIGN KEY (`promo_id`) REFERENCES `promo` (`promo_id`),
+  ADD CONSTRAINT `memberpromos_ibfk_2` FOREIGN KEY (`member_id`) REFERENCES `member` (`member_id`);
 
+--
+-- Constraints for table `paymentlog`
+--
+ALTER TABLE `paymentlog`
+  ADD CONSTRAINT `paymentlog_ibfk_1` FOREIGN KEY (`member_id`) REFERENCES `member` (`member_id`);
+COMMIT;
 
-
-
-
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

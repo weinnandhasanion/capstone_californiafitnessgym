@@ -2,12 +2,17 @@
   require "./../functions/connect.php";
   session_start();
 
-  if(!isset($_SESSION["user"]) && !isset($_SESSION["pass"])) {
-    header("Location: ./../index.php");
+  if(!isset($_SESSION["member_id"])) {
+    header("Location: ./pages/index.php");
   }
 
+  $sql = "SELECT * FROM member WHERE member_id = '". $_SESSION["member_id"] ."'";
+  $result = mysqli_query($con, $sql);
+
+  $row = mysqli_fetch_assoc($result);
+
   if(isset($_POST["user"])) {
-    if($_POST["user"] == $_SESSION["user"]) {
+    if($_POST["user"] == $row["username"]) {
       echo 1;
       exit();
     } else {
@@ -22,11 +27,6 @@
       }
     }
   }
-
-  $sql = "SELECT * FROM member WHERE username = '". $_SESSION["user"] ."' AND password = '". $_SESSION["pass"] ."'";
-  $result = mysqli_query($con, $sql);
-
-  $row = mysqli_fetch_assoc($result);
 ?>
 
 <!DOCTYPE html>

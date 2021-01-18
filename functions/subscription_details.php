@@ -57,49 +57,56 @@ if($annualHasValue) {
 
 ($paidMonthly && $paidAnnual) ? $subscribed = true : $subscribed = false;
 
+function formatDate(string $date) {
+  $newDate = new DateTime($date);
+  $date = $newDate->format("M d, Y");
+
+  return $date;
+}
+
 if($monthlyHasValue && $annualHasValue) {
   if($paidMonthly && $paidAnnual) {
     $data->mpaid = true;
     $data->apaid = true;
-    $data->mstart = $monthlyStart;
-    $data->mend = $monthlyEnd;
-    $data->astart = $annualStart;
-    $data->aend = $annualEnd;
+    $data->mstart = formatDate($monthlyStart);
+    $data->mend = formatDate($monthlyEnd);
+    $data->astart = formatDate($annualStart);
+    $data->aend = formatDate($annualEnd);
   } else if($paidMonthly && !$paidAnnual) {
     $data->mpaid = true;
     $data->apaid = false;
-    $data->mstart = $monthlyStart;
-    $data->mend = $monthlylEnd;
-    $data->astart = $annualStart;
-    $data->aend = $annualEnd;
+    $data->mstart = formatDate($monthlyStart);
+    $data->mend = formatDate($monthlylEnd);
+    $data->astart = formatDate($annualStart);
+    $data->aend = formatDate($annualEnd);
   } else if(!$paidMonthly && $paidAnnual) {
     $data->mpaid = false;
     $data->apaid = true;
-    $data->mstart = $monthlyStart;
-    $data->mend = $monthlylEnd;
-    $data->astart = $annualStart;
-    $data->aend = $annualEnd;
+    $data->mstart = formatDate($monthlyStart);
+    $data->mend = formatDate($monthlyEnd);
+    $data->astart = formatDate($annualStart);
+    $data->aend = formatDate($annualEnd);
   } else {
     $data->mpaid = false;
     $data->apaid = false;
-    $data->mstart = $monthlyStart;
-    $data->mend = $monthlylEnd;
-    $data->astart = $annualStart;
-    $data->aend = $annualEnd;
+    $data->mstart = formatDate($monthlyStart);
+    $data->mend = formatDate($monthlyEnd);
+    $data->astart = formatDate($annualStart);
+    $data->aend = formatDate($annualEnd);
   }
 } else if($monthlyHasValue && !$annualHasValue) {
   if($paidMonthly) {
     $data->mpaid = true;
     $data->apaid = false;
-    $data->mstart = $monthlyStart;
-    $data->mend = $monthlylEnd;
+    $data->mstart = formatDate($monthlyStart);
+    $data->mend = formatDate($monthlylEnd);
     $data->astart = "No payment";
     $data->aend = "No payment";
   } else {
     $data->mpaid = false;
     $data->apaid = false;
-    $data->mstart = $monthlyStart;
-    $data->mend = $monthlylEnd;
+    $data->mstart = formatDate($monthlyStart);
+    $data->mend = formatDate($monthlylEnd);
     $data->astart = "No payment";
     $data->aend = "No payment";
   }
@@ -109,15 +116,15 @@ if($monthlyHasValue && $annualHasValue) {
     $data->apaid = true;
     $data->mstart = "No payment";
     $data->mend = "No payment";
-    $data->astart = $annualStart;
-    $data->aend = $annualEnd;
+    $data->astart = formatDate($annualStart);
+    $data->aend = formatDate($annualEnd);
   } else {
     $data->mpaid = false;
     $data->apaid = false;
     $data->mstart = "No payment";
     $data->mend = "No payment";
-    $data->astart = $annualStart;
-    $data->aend = $annualEnd;
+    $data->astart = formatDate($annualStart);
+    $data->aend = formatDate($annualEnd);
   }
 } else {
   $data->mpaid = false;

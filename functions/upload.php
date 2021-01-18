@@ -31,19 +31,19 @@ if ($uploadOk == 0) {
 }
 
 $sql = "UPDATE member
-SET image_pathname = '".$_FILES["file"]["name"]."'
-WHERE username = '".$_SESSION["user"]."' AND password = '".$_SESSION["pass"]."'";
+        SET image_pathname = '".$_FILES["file"]["name"]."'
+        WHERE member_id = '".$_SESSION["member_id"]."'";
 $result = mysqli_query($con, $sql);
 
 if(!$result) {
   echo "Error: ". mysqli_error($con);
 }
 
-if(!isset($_SESSION["user"]) && !isset($_SESSION["pass"])) {
+if(!isset($_SESSION["member_id"])) {
   header("Location: ./../index.php");
 }
 
-$sql = "SELECT * FROM member WHERE username = '". $_SESSION["user"] ."' AND password = '". $_SESSION["pass"] ."'";
+$sql = "SELECT * FROM member WHERE member_id = '". $_SESSION["member_id"] ."'";
 $result = mysqli_query($con, $sql);
 
 $row = mysqli_fetch_assoc($result);

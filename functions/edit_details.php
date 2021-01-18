@@ -9,11 +9,10 @@ $birthdate = $_POST["birthdate"];
 $address = $_POST["address"];
 
 $sql = "UPDATE member SET username = '". $user ."', email = '". $email ."', phone = '". $phone ."', birthdate = '". $birthdate ."', 
-      address = '". $address ."' WHERE username = '". $_SESSION["user"] ."' and password = '". $_SESSION["pass"] ."'";
+      address = '". $address ."' WHERE member_id = '". $_SESSION["member_id"] ."'";
 $result = mysqli_query($con, $sql);
 
 if($result) {
-  $_SESSION["user"] = $user;
   echo 1;
 } else {
   echo 0;

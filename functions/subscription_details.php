@@ -9,7 +9,9 @@ $paidMonthly = false;
 $paidAnnual = false;
 $data = new \stdClass();
 
-$sql = "SELECT * FROM paymentlog WHERE member_id = '".$_SESSION["member_id"]."' AND payment_description = 'Monthly Subscription' ORDER BY date_payment DESC";
+$sql = "SELECT * FROM paymentlog WHERE member_id = '".$_SESSION["member_id"]."' 
+        AND payment_description = 'Monthly Subscription' 
+        ORDER BY date_payment DESC";
 $res = mysqli_query($con, $sql);
 if(mysqli_num_rows($res) > 0) {
   $monthlyHasValue = true;

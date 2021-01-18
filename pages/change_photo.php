@@ -2,11 +2,11 @@
   require "./../functions/connect.php";
   session_start();
 
-  if(!isset($_SESSION["user"]) && !isset($_SESSION["pass"])) {
+  if(!isset($_SESSION["member_id"])) {
     header("Location: ./../index.php");
   }
 
-  $sql = "SELECT * FROM member WHERE username = '". $_SESSION["user"] ."' AND password = '". $_SESSION["pass"] ."'";
+  $sql = "SELECT * FROM member WHERE member_id = '". $_SESSION["member_id"] ."'";
   $result = mysqli_query($con, $sql);
 
   $row = mysqli_fetch_assoc($result);
@@ -72,7 +72,7 @@
       <h3>Do you want to remove your profile photo?</h3>
       <div style="height: 50px"></div>
       <div class="modal-footer">
-        <a href="#">Cancel</a>
+        <a href="#" id="cancel">Cancel</a>
         <a href="#" id="remove-confirm">Yes, remove</a>
       </div>
     </div>
@@ -98,11 +98,21 @@
       </div>
     </div>    
     <div class="main-cont">
-        <button class="btn btn-reg btn-red" id="remove-photo">Remove photo</button>
+        <?php 
+        if(empty($row["image_pathname"]) || $row["image_pathname"] == "default_picture.png") {
+        ?>
+        <button class="btn btn-reg btn-disabled" disabled="disabled" id="remove-photo">Remove photo</button>
+        <?php
+        } else {
+        ?> 
+        <button class="btn btn-reg btn-red" id="remove-photo">Remove photo</button>        
+        <?php
+        }
+        ?>
         <button class="btn btn-reg btn-green" id="upload-photo">Upload photo</button>
         <form action="./../functions/upload.php" enctype="multipart/form-data" method="POST">
           <input type="file" name="file" id="choose-file" onchange="readURL(this)">
-          <button class="btn btn-disabled" type="submit" disabled id="save-changes">Save changes</button>
+          <button class="btn btn-disabled" type="submit" disabled="disabled" id="save-changes">Save changes</button>
         </form>
     </div>
   </main>
@@ -118,6 +128,11 @@
       $("#remove-photo").click(function(e) {
         e.stopPropagation();
         $(".modal").css("display", "flex");
+      })
+
+      $("#cancel").click(function(e) {
+        e.stopPropagation();
+        $(".modal").css("display", "none");
       })
 
       $("#remove-confirm").click(function(e) {

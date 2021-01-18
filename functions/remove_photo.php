@@ -4,7 +4,7 @@ session_start();
 
 $sql = "UPDATE member
 SET image_pathname = 'default_picture.png'
-WHERE username = '".$_SESSION["user"]."' AND password = '".$_SESSION["pass"]."'";
+WHERE member_id = '". $_SESSION["member_id"] ."'";
 $result = mysqli_query($con, $sql);
 
 if(!$result) {

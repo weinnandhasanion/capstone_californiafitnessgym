@@ -84,31 +84,19 @@
     </div>
     <div class="icon-div">
       <div class="icon-cont">
-        <?php 
-        if(empty($row["image_pathname"])) {
-        ?>
+        <?php if(empty($row["image_pathname"])): ?>
         <img src="./../img/default_picture.png"  alt="profile_pic" id="profile_pic">
-        <?php
-        } else {
-        ?> 
+        <?php else: ?> 
         <img src="./../img/uploads/<?php echo $row["image_pathname"] ?>"  alt="profile_pic" id="profile_pic">
-        <?php
-        }
-        ?>
+        <?php endif ?>
       </div>
     </div>    
     <div class="main-cont">
-        <?php 
-        if(empty($row["image_pathname"]) || $row["image_pathname"] == "default_picture.png") {
-        ?>
+        <?php if(empty($row["image_pathname"]) || $row["image_pathname"] == "default_picture.png"): ?>
         <button class="btn btn-reg btn-disabled" disabled="disabled" id="remove-photo">Remove photo</button>
-        <?php
-        } else {
-        ?> 
+        <?php else: ?> 
         <button class="btn btn-reg btn-red" id="remove-photo">Remove photo</button>        
-        <?php
-        }
-        ?>
+        <?php endif ?>
         <button class="btn btn-reg btn-green" id="upload-photo">Upload photo</button>
         <form action="./../functions/upload.php" enctype="multipart/form-data" method="POST">
           <input type="file" name="file" id="choose-file" onchange="readURL(this)">

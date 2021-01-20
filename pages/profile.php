@@ -173,17 +173,11 @@
     </div>
     <div class="profile-cont">
       <div class="img-cont">
-        <?php 
-        if(empty($row["image_pathname"])) {
-        ?>
+        <?php if(empty($row["image_pathname"])): ?>
         <img src="./../img/default_picture.png" alt="profile_pic">
-        <?php
-        } else {
-        ?> 
+        <?php else: ?> 
         <img src="./../img/uploads/<?php echo $row["image_pathname"] ?>" alt="profile_pic">
-        <?php
-        }
-        ?>
+        <?php endif; ?>
       </div>
       <div class="name-id">
         <h3 class="profile-name fw-600 text-white" id="name"><?php echo $row["first_name"] ." ". $row["last_name"] ?></h3>
@@ -242,13 +236,11 @@
               <path fill="currentColor" d="M17.58,4H14V2H21V9H19V5.41L15.17,9.24C15.69,10.03 16,11 16,12C16,14.42 14.28,16.44 12,16.9V19H14V21H12V23H10V21H8V19H10V16.9C7.72,16.44 6,14.42 6,12A5,5 0 0,1 11,7C12,7 12.96,7.3 13.75,7.83L17.58,4M11,9A3,3 0 0,0 8,12A3,3 0 0,0 11,15A3,3 0 0,0 14,12A3,3 0 0,0 11,9Z" />
             </svg>
             <p>
-              <?php
-                if($row["gender"] == "M") {
-                  echo "Male";
-                } else {
-                  echo "Female";
-                }
-              ?>
+              <?php if($row["gender"] == "M"): ?>
+              Male
+              <?php else: ?>
+              Female
+              <?php endif; ?>
             </p>
           </span>
           <span>

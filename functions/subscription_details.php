@@ -29,7 +29,9 @@ if(mysqli_num_rows($res) > 0) {
   $monthlyHasValue = false;
 }
 
-$sql2 = "SELECT * FROM paymentlog WHERE member_id = '".$_SESSION["member_id"]."' AND payment_description = 'Annual Subscription' ORDER BY date_payment DESC";
+$sql2 = "SELECT * FROM paymentlog WHERE member_id = '".$_SESSION["member_id"]."' 
+        AND payment_description = 'Annual Membership' 
+        ORDER BY date_payment DESC";
 $res2 = mysqli_query($con, $sql2);
 if(mysqli_num_rows($res2) > 0) {
   $annualHasValue = true;

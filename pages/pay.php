@@ -35,7 +35,7 @@ if(mysqli_num_rows($res) > 0) {
 
 $sql2 = "SELECT * FROM paymentlog 
       WHERE member_id = '".$_SESSION["member_id"]."' 
-      AND payment_description = 'Annual Subscription' 
+      AND payment_description = 'Annual Membership' 
       ORDER BY date_payment DESC";
 $res2 = mysqli_query($con, $sql2);
 if(mysqli_num_rows($res2) > 0) {
@@ -126,6 +126,15 @@ if($annualHasValue) {
       </div>
     </div>
   </div>
+  <div class="modal" id="post-payment">
+    <div class="modal-md" class="text-center">
+      <h3 class="fw-600" id="payment-stat"></h3>
+      <div style="height: 50px"></div>
+      <div class="modal-footer" style="justify-content: flex-end">
+        <a href="#" id="close-post-payment">Close</a>
+      </div>
+    </div>
+  </div>
   <div class="sidebar" id="sidebar">
     <i class="material-icons" style="font-size: 32px" id="back">keyboard_backspace</i>
     <div class="items">
@@ -188,17 +197,11 @@ if($annualHasValue) {
     </div>
     <div class="main-cont">
       <div class="content">
-        <?php 
-        if($subscribed == false) {
-        ?>
+        <?php if($subscribed == false): ?>
         <h2>Your subscription is currently <span class="text-red">due.</span></h2>
-        <?php
-        } else {
-        ?>
+        <?php else: ?>
         <h2>Your subscription is currently <span class="text-green">ongoing.</span></h2>
-        <?php
-        }
-        ?>
+        <?php endif ?>
         <div class="list-div">
           <div class="list-item left">
             <h4>Availed promo(s)</h4>
@@ -214,45 +217,31 @@ if($annualHasValue) {
           </div>
           <div class="list-item right">
             <h4>P750.00 
-            <?php 
-            if($paidMonthly) {
-            ?>
-            <span class="text-green" id="monthlypay">Paid</span>
-            <?php 
-            } else {
-            ?>
-            <span class="text-red" id="monthlypay">Due</span>
-            <?php
-            }
-            ?>
+            <?php if($paidMonthly): ?>
+              <span class="text-green" id="monthlypay">Paid</span>
+            <?php else: ?>
+              <span class="text-red" id="monthlypay">Due</span>
+            <?php endif ?>
             </h4>
-            <?php 
-            if($paidMonthly) {
-            ?>
+          <?php if($paidMonthly): ?>
             <small>Expires on 
-            <?php 
+          <?php 
             $a = new DateTime($monthlyEnd);
             $exp = $a->format("m/d/Y");
             echo $exp;
-            ?>
+          ?>
             </small>
-            <?php 
-            } else if(!$monthlyHasValue) {
-            ?>
+          <?php elseif(!$monthlyHasValue): ?>
             <small>No payment</small>
-            <?php
-            } else {
-            ?>
+          <?php else: ?>
             <small>Expired on
-            <?php 
+          <?php 
             $a = new DateTime($monthlyEnd);
             $exp = $a->format("m/d/Y");
             echo $exp;
-            ?>
+          ?>
             </small>
-            <?php
-            }
-            ?>
+          <?php endif ?>
           </div>
         </div>
         <div class="list-div">
@@ -261,45 +250,31 @@ if($annualHasValue) {
           </div>
           <div class="list-item right">
             <h4>P200.00 
-            <?php 
-            if($paidAnnual) {
-            ?>
+            <?php if($paidAnnual): ?>
             <span class="text-green" id="annualpay">Paid</span>
-            <?php 
-            } else {
-            ?>
+            <?php else: ?>
             <span class="text-red" id="annualpay">Due</span>
-            <?php
-            }
-            ?>
+            <?php endif ?>
             </h4>
-            <?php 
-            if($paidAnnual) {
-            ?>
+            <?php if($paidAnnual): ?>
             <small>Expires on
-            <?php 
-            $a = new DateTime($annualEnd);
-            $exp = $a->format("m/d/Y");
-            echo $exp;
-            ?>
+              <?php 
+              $a = new DateTime($annualEnd);
+              $exp = $a->format("m/d/Y");
+              echo $exp;
+              ?>
             </small>
-            <?php 
-            } else if(!$annualHasValue) {
-            ?>
+            <?php elseif(!$annualHasValue): ?>
             <small>No payment</small>
-            <?php
-            } else {
-            ?>
+            <?php else: ?>
             <small>Expired on
-            <?php 
-            $a = new DateTime($annualEnd);
-            $exp = $a->format("m/d/Y");
-            echo $exp;
-            ?>
+              <?php 
+              $a = new DateTime($annualEnd);
+              $exp = $a->format("m/d/Y");
+              echo $exp;
+              ?>
             </small>
-            <?php
-            }
-            ?>
+            <?php endif ?>
           </div>
         </div>
         <hr style="border: 1px solid black; width: 100%">
@@ -317,34 +292,77 @@ if($annualHasValue) {
             <div id="paypal-button-container"></div>
           </div>
         </div>
-  
       </div>
     </div>
   </main>
 
+  <script src="https://www.paypal.com/sdk/js?client-id=AYXeISRpvW_Zd2FLKTbdaTdMHrJLCGRoNeimz1g9SMBy-_mMNVduiP8fiSpvbd0QF8pXvSe-a7bZOgdn&currency=PHP&disable-funding=credit,card" data-sdk-integration-source="button-factory"></script>
   <script src="http://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
   <script src="./../js/sidebar.js"></script>
-  <script src="https://www.paypal.com/sdk/js?client-id=sb&currency=USD" data-sdk-integration-source="button-factory"></script>
   <script>
-    function initPayPalButton() {
+    function initPayPalButton(amt, items) {
+      console.log()
       paypal.Buttons({
         style: {
           shape: 'pill',
-          color: 'gold',
+          color: 'black',
           layout: 'vertical',
           label: 'pay',
-          
         },
 
         createOrder: function(data, actions) {
           return actions.order.create({
-            purchase_units: [{"amount":{"currency_code":"USD","value":1}}]
+            purchase_units: [
+              {
+                "amount": 
+                { 
+                  "currency_code":"PHP",
+                  "value": amt,
+                  "breakdown": {
+                    "item_total": {
+                      "currency_code": "PHP",
+                      "value": amt
+                    }
+                  }
+                },
+                "items": items
+              },
+            ]
           });
         },
 
         onApprove: function(data, actions) {
           return actions.order.capture().then(function(details) {
-            alert('Transaction completed by ' + details.payer.name.given_name + '!');
+            console.log(details);
+
+            let data = {
+              paymentId: details.id,
+              amount: details.purchase_units[0].amount.value,
+              paymentDate: details.create_time,
+              status: details.status,
+              items: details.purchase_units[0].items
+            }
+
+            if(data.status === "COMPLETED") {
+              $.ajax({
+                url: "./../functions/process_paypal.php",
+                type: "json",
+                method: "POST",
+                data: {
+                  data: JSON.stringify(data)
+                },
+                success: function(data) {
+                  console.log(data);
+                  if(data == 1 || data == 2) {
+                    $("#payment-stat").addClass("text-green").text("Your payment is successful!");
+                    $("#post-payment").css("display", "flex");
+                  } else {
+                    $("#payment-stat").addClass("text-red").text("Your payment is unsuccessful. Please try again later.");
+                    $("#post-payment").css("display", "flex");
+                  }
+                }
+              });
+            }
           });
         },
 
@@ -353,8 +371,7 @@ if($annualHasValue) {
         }
       }).render('#paypal-button-container');
     }
-    initPayPalButton();
-
+    
     window.onload = () => {
       $("#loader").css("display", "none");
       $("#confirm-logout").on("click", function() {
@@ -368,6 +385,10 @@ if($annualHasValue) {
         });
       });
 
+      $("#close-post-payment").click(function() {
+        window.location.reload();
+      })
+
       let m = $("#monthlypay").text();
       let a = $("#annualpay").text();
       let toPay = $("#to-pay");
@@ -379,6 +400,59 @@ if($annualHasValue) {
         toPay.text("P950.00");
       } else {
         toPay.text("P0.00");
+      }
+
+      if(document.querySelector("#to-pay").innerText != "P0.00") {
+        let amt = $("#to-pay").text();
+        let amount = amt.slice(1, amt.indexOf("."));
+
+        function getItems(amount) {
+          if(amount == "750") {
+            return [
+              {
+                "name": "Monthly Subscription",
+                "unit_amount": {
+                  "currency_code": "PHP",
+                  "value": 750
+                },
+                "quantity": "1"
+              }
+            ];
+          } else if(amount == "200") {
+            return [
+              {
+                "name": "Annual Membership",
+                "unit_amount": {
+                  "currency_code": "PHP",
+                  "value": 200
+                },
+                "quantity": "1"
+              }
+            ];
+          } else if(amount == "950") {
+            return [
+              {
+                "name": "Monthly Subscription",
+                "unit_amount": {
+                  "currency_code": "PHP",
+                  "value": 750
+                },
+                "quantity": "1"
+              },
+              {
+                "name": "Annual Membership",
+                "unit_amount": {
+                  "currency_code": "PHP",
+                  "value": 200
+                },
+                "quantity": "1"
+              }
+            ]
+          }
+        };
+        let items = getItems(amount);
+        
+        initPayPalButton(amount, items);
       }
     }
   </script>

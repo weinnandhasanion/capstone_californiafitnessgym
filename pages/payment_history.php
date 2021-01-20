@@ -2,7 +2,7 @@
 require "./../functions/connect.php";
 session_start();
 
-if(!isset($_SESSION["user"]) && !isset($_SESSION["pass"])) {
+if(!isset($_SESSION["member_id"])) {
   header("Location: ./../index.php");
 }
 
@@ -315,8 +315,8 @@ if(mysqli_num_rows($res) > 0) {
       </div>
       <div class="history-div" id="history-div">
         <?php 
-        if(mysqli_num_rows($res) > 0) {
-          foreach($rows as $row) {
+        if(mysqli_num_rows($res) > 0):
+          foreach($rows as $row):
         ?>
         <div class="list-div">
           <small class="payment-date fw-800 text-disabled">
@@ -338,16 +338,13 @@ if(mysqli_num_rows($res) > 0) {
           </div>
         </div>
         <?php
-          }
-        } else {
+          endforeach;
+        else:
         ?>
         <div class="no-value" id="no-value">
           <p class="text-disabled">No payments to show.</p>
         </div>
-        <?php
-        }
-        ?>
-        
+        <?php endif ?>
       </div>
       <div class="print-cont">
         <button id="print-btn" class="btn btn-reg">Print payment history</button>

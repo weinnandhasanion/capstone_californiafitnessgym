@@ -51,7 +51,6 @@
 
         $.ajax({
           method: 'post',
-          type: 'json',
           url: './functions/login_process.php',
           data: {
             user: user,

@@ -243,6 +243,24 @@ if(mysqli_num_rows($res) > 0) {
       </div>
     </div>
   </div>
+  <div class="modal" id="details-modal">
+    <div class="modal-md" id='target'>
+      <h3 id="pmt-payer" class="fw-300">Payment for Weinnand Hasanion</h3>
+      <hr>
+      <p>Member ID: <i id="pmt-member-id"></i></p>
+      <p>Payment ID: <i id="pmt-id"></i></p>
+      <p>Payment description: <i id="pmt-desc"></i></p>
+      <p>Amount: <i id="pmt-amount"></i></p>
+      <p>Date and time of payment: <i id="pmt-date-time"></i></p>
+      <p>Payment type: <i id="pmt-type"></i></p>
+      <p id="pmt-online-id"></p>
+      <hr>
+      <div class="modal-footer">
+        <p style="visibility: hidden">asdf</p>
+        <a href="#" id="close-details">Close</a>
+      </div>
+    </div>
+  </div>
   <div class="sidebar" id="sidebar">
     <i class="material-icons" style="font-size: 32px" id="back">keyboard_backspace</i>
     <div class="items">
@@ -330,7 +348,14 @@ if(mysqli_num_rows($res) > 0) {
           <div class="list-content">
             <div class="left">
               <p class="payment-for fw-600"><?php echo $row["payment_description"] ?></p>
-              <a href="#" class="text-red deets" id="<?php echo $row["payment_id"] ?>">Details</a>
+              <small>
+              <?php if($row["payment_type"] == "Online"): ?>
+              Paid online
+              <?php else:?>
+              Paid by cash
+              <?php endif ?>
+              </small> &#183;
+              <a href="#" class="text-red deets" data-id="<?php echo $row["payment_id"] ?>" onclick="showDetailsModal(this)">Details</a>
             </div>
             <div class="right">
               <p class="payment-amount fw-600 text-green">P<?php echo $row["payment_amount"] ?>.00</p>
@@ -352,9 +377,55 @@ if(mysqli_num_rows($res) > 0) {
     </div>
   </main>
 
-  <script src="http://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
   <script src="./../js/sidebar.js"></script>
   <script>
+    function showDetailsModal(el) {
+      let id = el.getAttribute("data-id");
+
+      $.ajax({
+        url: "./../functions/payment_details.php",
+        type: 'json',
+        method: 'POST',
+        data: {
+          id: id
+        },
+        success: function(res) {
+          data = JSON.parse(res);
+          $("#pmt-payer").html(`Payment for <b>${data.first_name} ${data.last_name}</b>`);
+          $("#pmt-id").html(data.payment_id);
+          $("#pmt-member-id").html(data.member_id);
+          $("#pmt-desc").html(data.payment_description)
+          $("#pmt-amount").html(`P${data.payment_amount}.00`);
+          $("#pmt-date-time").text(`${data.date_payment} ${data.time_payment}`);
+          $("#pmt-type").text(data.payment_type);
+          if(data.payment_type == "Online") {
+            $("#pmt-online-id").html(`Online payment ID: ${data.online_payment_id}`);
+          } else {
+            $("#pmt-online-id").text("");
+          }
+          $("#details-modal").css("display", "flex");
+        }
+      });
+
+      $("#close-details").click(function() {
+        $("#details-modal").css("display", "none");
+      })
+
+      document.addEventListener("click", function(e) {
+        click = e.target;
+        target = document.querySelector("#target");
+        do {
+          if (click == target) {
+            return;
+          }
+          
+          click = click.parentNode;
+        } while (click);
+        $("#details-modal").css("display", "none");
+      });
+    }
+    
     window.addEventListener('load', () => {
       $("#loader").css("display", "none");
 
@@ -374,6 +445,12 @@ if(mysqli_num_rows($res) > 0) {
             
             if(arr != 0) {
               arr.forEach(row => {
+                let type;
+                if(row.payment_type == "Online") {
+                  type = "Paid online";
+                } else {
+                  type = "Paid by cash";
+                }
                 let html = `<div class="list-div">
                               <small class="payment-date fw-800 text-disabled">
                               ${row.date_payment}
@@ -384,7 +461,8 @@ if(mysqli_num_rows($res) > 0) {
                                   <p class="payment-for fw-600">
                                   ${row.payment_description}
                                   </p>
-                                  <a href="#" class="text-red" id="${row.payment_id}">Details</a>
+                                  <small>${type}</small> &#183;
+                                  <a href="#" class="text-red" data-id="${row.payment_id}" onclick="showDetailsModal(this)">Details</a>
                                 </div>
                                 <div class="right">
                                   <p class="payment-amount fw-600 text-green">

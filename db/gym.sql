@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 18, 2021 at 06:13 AM
+-- Generation Time: Jan 20, 2021 at 02:20 PM
 -- Server version: 10.4.17-MariaDB
 -- PHP Version: 7.4.13
 
@@ -124,7 +124,7 @@ CREATE TABLE `member` (
 
 INSERT INTO `member` (`member_id`, `first_name`, `last_name`, `username`, `password`, `passwordChanged`, `gender`, `birthdate`, `email`, `phone`, `member_status`, `date_registered`, `date_deleted`, `start_subscription`, `end_subscription`, `member_type`, `address`, `acc_status`, `admin_id`, `program_name`, `image_pathname`) VALUES
 (1921681000, 'Weinnand', 'Hasanion', 'weinnandhasanion', '$2y$10$5yGbb3Iv6D9nLogDVEUg0.REP462avUG6pq49LTNPKVSpqoWnjtfe', NULL, 'M', '1999-08-04', 'weinnandhasanion@gmail.com', '09206013530', 'Paid', '2021-01-18', NULL, NULL, NULL, 'Regular', 'Cebu City, Philippines', 'active', NULL, NULL, 'logo.png'),
-(1921681001, 'John', 'Doe', '1921681001', '$2y$10$cRcmG1j0XuzWspY/Osn62OX5ztHuSz0lRwSkTHvaSB5p18ZEbHQo2', NULL, 'M', '1977-01-01', 'johndoe@gmail.com', '09151234567', 'Paid', '2021-01-18', NULL, NULL, NULL, 'Regular', 'Cebu City, Philippines', 'active', NULL, NULL, '');
+(1921681001, 'John', 'Doe', 'johndoe', '$2y$10$Vlb1gCOOgOSbG.umQWtIDem15rvqp8XpaLXxi5XBwjoMXOZCEPBdi', NULL, 'M', '1977-01-01', 'johndoe@gmail.com', '09151234567', 'Paid', '2021-01-18', NULL, NULL, NULL, 'Regular', 'Cebu City, Philippines', 'active', NULL, NULL, 'default_picture.png');
 
 -- --------------------------------------------------------
 
@@ -150,12 +150,26 @@ CREATE TABLE `paymentlog` (
   `member_id` int(100) DEFAULT NULL,
   `first_name` varchar(100) DEFAULT NULL,
   `last_name` varchar(100) DEFAULT NULL,
-  `payment_description` enum('Monthly Subscription','Annual Subscription','Walk-in') DEFAULT NULL,
+  `payment_description` enum('Monthly Subscription','Annual Membership','Walk-in') DEFAULT NULL,
   `payment_type` enum('Cash','Online') NOT NULL,
   `date_payment` date DEFAULT NULL,
-  `payment_amount` enum('750','200','50') DEFAULT NULL,
+  `time_payment` varchar(15) NOT NULL,
+  `payment_amount` varchar(4) DEFAULT NULL,
+  `online_payment_id` varchar(9999) DEFAULT NULL,
   `admin_id` int(100) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `paymentlog`
+--
+
+INSERT INTO `paymentlog` (`payment_id`, `member_id`, `first_name`, `last_name`, `payment_description`, `payment_type`, `date_payment`, `time_payment`, `payment_amount`, `online_payment_id`, `admin_id`) VALUES
+(9264, 1921681001, 'John', 'Doe', 'Annual Membership', 'Cash', '2021-01-18', '', '200', NULL, NULL),
+(9265, 1921681001, 'John', 'Doe', 'Monthly Subscription', 'Cash', '2021-01-18', '', '750', NULL, NULL),
+(9266, 1921681000, 'Weinnand', 'Hasanion', 'Monthly Subscription', 'Cash', '2020-12-16', '', '750', NULL, NULL),
+(9267, 1921681000, 'Weinnand', 'Hasanion', 'Annual Membership', 'Cash', '2020-01-03', '', '200', NULL, NULL),
+(9289, 1921681000, 'Weinnand', 'Hasanion', 'Monthly Subscription', 'Online', '2021-01-20', '08:27 PM', '750', '7LT12290NA148052U', NULL),
+(9290, 1921681000, 'Weinnand', 'Hasanion', 'Annual Membership', 'Online', '2021-01-20', '08:27 PM', '200', '7LT12290NA148052U', NULL);
 
 -- --------------------------------------------------------
 
@@ -320,7 +334,7 @@ ALTER TABLE `member`
 -- AUTO_INCREMENT for table `paymentlog`
 --
 ALTER TABLE `paymentlog`
-  MODIFY `payment_id` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9262;
+  MODIFY `payment_id` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9291;
 
 --
 -- AUTO_INCREMENT for table `program`
